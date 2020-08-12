@@ -21,9 +21,50 @@ namespace Library.Controllers
       _db = db;
     }
 
-    public ActionResult Index()
+    public ActionResult Index(string sortOrder)
     {
-      return View(_db.Books.OrderBy(book => book.Title).ToList());
+      // List<Book> books = _db.Books
+      //   .Include(book => book.Authors)
+      //   .ThenInclude(join => join.Author)
+      //   .Include(book => book.Genres)
+      //   .ThenInclude(book => book.Genre)
+      //   .ToList();
+      // return View(books);
+
+      ViewBag.AuthorSortParam = sortOrder == "Author" ? "author_desc" : "Author";
+      ViewBag.GenreSortParam = sortOrder == "Genre" ? "genre_desc" : "Genre";
+      ViewBag.TitleSortParam = sortOrder == "Title" ? "title_desc" : "Title";
+
+      IQueryable<Book> books = _db.Books
+        .Include(book => book.Authors)
+        .ThenInclude(join => join.Author)
+        .Include(book => book.Genres)
+        .ThenInclude(book => book.Genre).AsQueryable();
+      switch (sortOrder)
+      {
+        case "Title":
+          books = books.OrderBy(book => book.Title);
+          break;
+        case "title_desc":
+          books = books.OrderByDescending(book => book.Title);
+          break;
+        case "Author":
+          books = books.OrderBy(book => book.Authors);
+          break;
+        case "author_desc":
+          books = books.OrderByDescending(book => book.Authors);
+          break;
+        case "Genre":
+          books = books.OrderBy(book => book.Genres);
+          break;
+        case "genre_desc":
+          books = books.OrderByDescending(book => book.Genres);
+          break;
+        default:
+          books = books.OrderBy(book => book.Title);
+          break;
+      }
+      return View(books.ToList());
     }
 
     public ActionResult Create()

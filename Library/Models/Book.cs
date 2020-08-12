@@ -11,7 +11,6 @@ namespace Library.Models
     public string Title { get; set; }
     public DateTime PublicationDate { get; set; }
     public bool IsAvailable { get; set; }
-
     public ICollection<AuthorBook> Authors { get; set; }
     public ICollection<BookGenre> Genres { get; set; }
     public Book()

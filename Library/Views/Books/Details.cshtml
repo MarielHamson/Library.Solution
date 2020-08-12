@@ -1,0 +1,51 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Book
+
+<h2>Book Details</h2>
+<hr />
+<h3>@Html.DisplayNameFor(model => model.Title): @Html.DisplayFor(model => model.Title)</h3>
+
+<h4>@Html.DisplayNameFor(model => model.PublicationDate): @Html.DisplayFor(model => model.PublicationDate)</h4>
+
+@if(@Model.Authors.Count == 0)
+{
+  <p>This book does not have any authors assigned yet. @Html.ActionLink("Click here to add an author", "AddAuthor")</p>
+}
+else
+{
+  <h4>Authors: </h4>
+  <ul>
+  @foreach(var join in Model.Authors)
+  {
+    <li>@join.Author.FullName</li>
+    @using (Html.BeginForm("DeleteAuthor", "Books"))
+    {
+      @Html.Hidden("joinId", @join.AuthorBookId)
+      <input type="submit" value="Delete"/>
+    }
+  }
+  </ul>
+}
+
+@if(@Model.Genres.Count == 0)
+{
+  <p>This book does not belong to any genres. @Html.ActionLink("Click here to add a genre", "AddGenre")</p>
+}
+else
+{
+  <h4>Genres: </h4>
+  <ul>
+  @foreach(var join in Model.Genres)
+  {
+    <li>@join.Genre.Name</li>
+    @using (Html.BeginForm("DeleteGenre", "Books"))
+    {
+      @Html.Hidden("joinId", @join.BookGenreId)
+      <input type="submit" value="Delete"/>
+    }
+  }
+  </ul>
+}

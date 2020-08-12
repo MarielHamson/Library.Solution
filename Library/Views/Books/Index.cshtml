@@ -3,33 +3,54 @@
 }
 
 @using Library.Models;
-@model List<Library.Models.Book>;
+@model IEnumerable<Library.Models.Book>;
 
 <h1>Books</h1>
 
-@if (@Model.Count == 0)
+@if (@Model.Any ())
 {
-  <h3>No books have been added yet!</h3>
-} 
-
-<table class="table table-hover">
-  <thead>
+<table class="table">
     <tr>
-    @Html.ActionLink("Name", "Index", new { sortOrder = ViewBag.NameSortParm })
-      <th scope="col">Title</th>
-      <th scope="col">Author</th>
-      <th scope="col">Genre</th>
-      <th scope="col">Publication Date</th>
-    </tr>  
-  </thead>
-  <tbody>
-@foreach (Book book in Model)
+        <th>
+            @Html.ActionLink("Title", "Index", new { sortOrder = ViewBag.TitleSortParam })
+        </th>
+        <th>
+            @Html.ActionLink("Author", "Index", new { sortOrder = ViewBag.AuthorSortParam })
+        </th>
+        <th>
+            @Html.ActionLink("Genre", "Index", new { sortOrder = ViewBag.GenreSortParam })
+        </th>
+        <th>
+        Publication Date
+        </th>
+    </tr>
+    
+  @foreach (Book book in @Model)
+  {
+    <tr>
+      <td>
+        @Html.ActionLink($"{book.Title}", "Details", new { id = book.BookId})
+      </td>
+      <td>
+        @foreach(var join in book.Authors)
+        {
+          <li>@Html.ActionLink($"{join.Author.FullName}", "Details", "Authors", new { id = join.AuthorId })</li>
+        }
+      </td>
+      <td>
+        @foreach(var join in book.Genres)
+        {
+          <li>@Html.ActionLink($"{join.Genre.Name}", "Details", "Authors", new { id = join.GenreId })</li>
+        }
+      </td>
+      <td>
+        @book.PublicationDate
+      </td>
+    </tr>
+  }
+  </table>
+} 
+else 
 {
-  <tr class="table-default">
-    <td>@Html.ActionLink($"{book.Title}", "Details", new { id = book.BookId })</td>
-    <td>@book.PublicationDate.ToShortString()</td>
-    <td>@Html.ActionLink($"{book.Title}", "Details", new { id = book.BookId })</td>
-  </tr>
+  <h3>There are no books to list!</h3>
 }
-  </tbody>
-</table>
