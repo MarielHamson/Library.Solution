@@ -1,0 +1,32 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Book
+
+<h3>Edit: @Html.DisplayFor(model => model.Title)</h3>
+
+@using (Html.BeginForm())
+{
+
+  @Html.HiddenFor(model => model.BookId)
+  
+  @Html.LabelFor(model => model.Title)
+  @Html.EditorFor(model => model.Title) <br>
+
+  @Html.Label("Publication Date")
+  @Html.EditorFor(model => model.PublicationDate) <br>
+
+  @Html.Label("Available  ")
+  @Html.RadioButton("IsAvailable", true) <br>
+
+  @Html.Label("Not Available  ")
+  @Html.RadioButton("IsAvailable", false) <br>
+
+  //@Html.Label("Select Genre")
+  //@Html.DropDownList("GenreId") <br>
+
+
+
+  <input type="submit" value="Save" />
+}
