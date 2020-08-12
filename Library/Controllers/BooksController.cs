@@ -16,55 +16,55 @@ namespace Library.Controllers
   {
     private readonly LibraryContext _db;
 
-    public BooksController(UserManager<LibrarianUser> userManager, LibraryContext db)
+    public BooksController(LibraryContext db)
     {
       _db = db;
     }
 
     public ActionResult Index(string sortOrder)
     {
-      // List<Book> books = _db.Books
-      //   .Include(book => book.Authors)
-      //   .ThenInclude(join => join.Author)
-      //   .Include(book => book.Genres)
-      //   .ThenInclude(book => book.Genre)
-      //   .ToList();
-      // return View(books);
-
-      ViewBag.AuthorSortParam = sortOrder == "Author" ? "author_desc" : "Author";
-      ViewBag.GenreSortParam = sortOrder == "Genre" ? "genre_desc" : "Genre";
-      ViewBag.TitleSortParam = sortOrder == "Title" ? "title_desc" : "Title";
-
-      IQueryable<Book> books = _db.Books
+      List<Book> books = _db.Books
         .Include(book => book.Authors)
         .ThenInclude(join => join.Author)
         .Include(book => book.Genres)
-        .ThenInclude(book => book.Genre).AsQueryable();
-      switch (sortOrder)
-      {
-        case "Title":
-          books = books.OrderBy(book => book.Title);
-          break;
-        case "title_desc":
-          books = books.OrderByDescending(book => book.Title);
-          break;
-        case "Author":
-          books = books.OrderBy(book => book.Authors);
-          break;
-        case "author_desc":
-          books = books.OrderByDescending(book => book.Authors);
-          break;
-        case "Genre":
-          books = books.OrderBy(book => book.Genres);
-          break;
-        case "genre_desc":
-          books = books.OrderByDescending(book => book.Genres);
-          break;
-        default:
-          books = books.OrderBy(book => book.Title);
-          break;
-      }
-      return View(books.ToList());
+        .ThenInclude(book => book.Genre)
+        .ToList();
+      return View(books);
+
+      // ViewBag.AuthorSortParam = sortOrder == "Author" ? "author_desc" : "Author";
+      // ViewBag.GenreSortParam = sortOrder == "Genre" ? "genre_desc" : "Genre";
+      // ViewBag.TitleSortParam = sortOrder == "Title" ? "title_desc" : "Title";
+
+      // IQueryable<Book> books = _db.Books
+      //   .Include(book => book.Authors)
+      //   .ThenInclude(join => join.Author)
+      //   .Include(book => book.Genres)
+      //   .ThenInclude(book => book.Genre).AsQueryable();
+      // switch (sortOrder)
+      // {
+      //   case "Title":
+      //     books = books.OrderBy(book => book.Title);
+      //     break;
+      //   case "title_desc":
+      //     books = books.OrderByDescending(book => book.Title);
+      //     break;
+      //   case "Author":
+      //     books = books.OrderBy(book => book.Authors);
+      //     break;
+      //   case "author_desc":
+      //     books = books.OrderByDescending(book => book.Authors);
+      //     break;
+      //   case "Genre":
+      //     books = books.OrderBy(book => book.Genres);
+      //     break;
+      //   case "genre_desc":
+      //     books = books.OrderByDescending(book => book.Genres);
+      //     break;
+      //   default:
+      //     books = books.OrderBy(book => book.Title);
+      //     break;
+      // }
+      // return View(books.ToList());
     }
 
     public ActionResult Create()
@@ -104,22 +104,12 @@ namespace Library.Controllers
     public ActionResult Edit(int id)
     {
       var thisBook = _db.Books.FirstOrDefault(books => books.BookId == id);
-      ViewBag.GenreId = new SelectList(_db.Genres, "GenreId", "Name");
-      ViewBag.AuthorId = new SelectList(_db.Authors, "AuthorId", "FullName");
       return View(thisBook);
     }
 
     [HttpPost]
-    public ActionResult Edit(Book book, int AuthorId, int GenreId)
+    public ActionResult Edit(Book book)
     {
-      if (GenreId != 0)
-      {
-        _db.BookGenre.Add(new BookGenre() { GenreId = GenreId, BookId = book.BookId });
-      }
-      if (AuthorId != 0)
-      {
-        _db.AuthorBook.Add(new AuthorBook() { AuthorId = AuthorId, BookId = book.BookId });
-      }
       _db.Entry(book).State = EntityState.Modified;
       _db.SaveChanges();
       return RedirectToAction("Index");
